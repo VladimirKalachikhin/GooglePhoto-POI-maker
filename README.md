@@ -7,7 +7,7 @@ You have a some photos with spatial info. You create GooglePhotos album with thi
 - Spatial info from local files  
 ## Usage
 Directly for shared GooglePhoto album:  
-Create a public url for GooglePhoto album, and run
+Create a public url for GooglePhoto album, and run  
 `$ ./gfpoi.php [parms] https://youGoogleGhotoGharedLink /dir/to/photos/with/spatial/info/ [/output/file.csv]`  
 If you specify optional  an optional output file , you will see some error messages in standard output: about files without spatial info, for example.  
 Another way - first create a csv file with file names and url's from GooglePhoto album by any tool ( [GooglePhotosURLs
@@ -17,7 +17,7 @@ Another way - first create a csv file with file names and url's from GooglePhoto
 `$ ./gfpoi.php [parms] /path/to/file/with/namesandurls.csv /dir/to/photos/with/spatial/info/ [/output/file.csv]`  
 Parameters are:  
 **-h** **--help** - help  
-**-e=**ext **--ext=**ext - extension of the image files with spatial info, if it is not same as GooglePhoto file extension.  
+**-e=** ext **--ext=** ext - extension of the image files with spatial info, if it is not same as GooglePhoto file extension.  
 ## Requirements
 PHP must be with EXIF extension. As a rule, this is so.
 ## Dependencies
