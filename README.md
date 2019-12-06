@@ -13,7 +13,7 @@ If you specify optional  an optional output file , you will see some error messa
 Another way - first create a csv file with file names and url's from GooglePhoto album by any tool ( [GooglePhotosURLs
 ](https://github.com/VladimirKalachikhin/GooglePhotosURLs) ), for example). This file must have a two collumns:  
  *`"filename.ext","http://GooglePhotoPermanentUrl"`*,  
-  without title in first string. And run:
+  without title in first string. And run:  
 `$ ./gfpoi.php [parms] /path/to/file/with/namesandurls.csv /dir/to/photos/with/spatial/info/ [/output/file.csv]`  
 Parameters are:  
 **-h** **--help** - help  
