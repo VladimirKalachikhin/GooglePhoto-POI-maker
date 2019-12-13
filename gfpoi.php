@@ -44,8 +44,7 @@ $columnLonName = 'longitude';
 
 $photoTypeName = 'photography';
 
-if(filter_var($pos_args[0],FILTER_VALIDATE_URL)) { 	// get names and urls from GooglePhoto
-	$albumPath = filter_var($pos_args[0],FILTER_SANITIZE_URL);
+if($albumPath = filter_var(filter_var($pos_args[0],FILTER_SANITIZE_URL),FILTER_VALIDATE_URL)) { 	// get names and urls from GooglePhoto
 	require_once("GooglePhotosURLs.php"); // 
 	$googlePhotos = GooglePhotosURLs($albumPath,NULL,NULL,'csv'); 	// get from GooglePhoto names and urls
 }
@@ -61,6 +60,7 @@ $outStr = "$columnNameName,$columnDescrName,$columnTypeName,$columnURIName,$colu
 if($outputFile) fwrite($outputFile,$outStr);
 else echo $outStr;
 foreach($googlePhotos as $num => $photo) {
+	if(!filter_var($photo[1],FILTER_VALIDATE_URL)) continue;
 	if($ext) {
 		$imgName = pathinfo($photo[0], PATHINFO_FILENAME) . ".$ext";
 	}
