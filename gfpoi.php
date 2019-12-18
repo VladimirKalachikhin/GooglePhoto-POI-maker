@@ -18,12 +18,16 @@ $ ./gfpoi.php [parms] /path/to/file/with/namesandurls.csv /dir/to/photos/with/sp
 parms:
 -h --help - this help
 -e=ext --ext=ext - extension of the image files with spatial info, if it is not same as GooglePhoto file extension
+/path/to/file/with/namesandurls.csv must have at least 2 columns: name and link
+Other columns may be:
+name description type link
+ - in that order
 
 <?php
 	exit;
 }
 $photosPath = filter_var($pos_args[1],FILTER_SANITIZE_STRING);
-$outputFile = '';
+$outputFileName = ''; $outputFile = NULL;
 if(isset($pos_args[2])) $outputFileName = filter_var($pos_args[2],FILTER_SANITIZE_STRING);
 
 $ext='';
@@ -45,8 +49,10 @@ $columnLonName = 'longitude';
 $photoTypeName = 'photography';
 
 if($albumPath = filter_var(filter_var($pos_args[0],FILTER_SANITIZE_URL),FILTER_VALIDATE_URL)) { 	// get names and urls from GooglePhoto
-	require_once("GooglePhotosURLs.php"); // 
+	$path_parts = pathinfo($_SERVER['SCRIPT_FILENAME']); // определяем каталог скрипта
+	require_once($path_parts['dirname']."/GooglePhotosURLs.php"); // 
 	$googlePhotos = GooglePhotosURLs($albumPath,NULL,NULL,'csv'); 	// get from GooglePhoto names and urls
+	print_r($googlePhotos); 
 }
 else { 	// get names and urls from file
 	$albumPath = filter_var($pos_args[0],FILTER_SANITIZE_STRING);
@@ -55,12 +61,14 @@ else { 	// get names and urls from file
 	//print_r($googlePhotos); 
 }
 if($outputFileName) $outputFile = fopen($outputFileName,'w') or exit("Open output File $outputFileName Error\n");
+
 //$outStr = "$columnNumberName,$columnNameName,$columnDescrName,$columnTypeName,$columnURIName,$columnLatName,$columnLonName\n";
-$outStr = "$columnNameName,$columnDescrName,$columnTypeName,$columnURIName,$columnLatName,$columnLonName\n";
+$outStr = "\"$columnNameName\",\"$columnDescrName\",\"$columnTypeName\",\"$columnURIName\",\"$columnLatName\",\"$columnLonName\"\n";
 if($outputFile) fwrite($outputFile,$outStr);
 else echo $outStr;
 foreach($googlePhotos as $num => $photo) {
-	if(!filter_var($photo[1],FILTER_VALIDATE_URL)) continue;
+	//print_r($photo);
+	if(!filter_var(end($photo),FILTER_VALIDATE_URL)) continue;
 	if($ext) {
 		$imgName = pathinfo($photo[0], PATHINFO_FILENAME) . ".$ext";
 	}
@@ -72,10 +80,23 @@ foreach($googlePhotos as $num => $photo) {
 		if($outputFile) echo "file $imgName no have spatial info\n";
 		continue;
 	}
-	$latitude = (string)(eval('return '.$exif['GPSLatitude'][0].';')).'°'.(string)(eval('return '.$exif['GPSLatitude'][1].';'))."'".(string)(eval('return '.$exif['GPSLatitude'][2].';')).'"'.$exif['GPSLatitudeRef'];
-	$longitude = (string)(eval('return '.$exif['GPSLongitude'][0].';')).'°'.(string)(eval('return '.$exif['GPSLongitude'][1].';'))."'".(string)(eval('return '.$exif['GPSLongitude'][2].';')).'"'.$exif['GPSLongitudeRef'];
-	//$outStr = "$num,".'"'.pathinfo($imgName, PATHINFO_BASENAME).'",,"'."$photoTypeName".'","'.$photo[1]."\",$latitude,$longitude\n";
-	$outStr = '"'.pathinfo($imgName, PATHINFO_BASENAME).'",,"'."$photoTypeName".'","'.$photo[1]."\",$latitude,$longitude\n";
+	//$latitude = (string)(eval('return '.$exif['GPSLatitude'][0].';')).'°'.(string)(eval('return '.$exif['GPSLatitude'][1].';'))."'".(string)(eval('return '.$exif['GPSLatitude'][2].';')).'"'.$exif['GPSLatitudeRef'];
+	$latitude = (string)((eval('return '.$exif['GPSLatitude'][0].';'))+((eval('return '.$exif['GPSLatitude'][1].';'))/60)+((eval('return '.$exif['GPSLatitude'][2].';'))/3600));
+	if($exif['GPSLatitudeRef']=='S') $latitude = "-$latitude";
+	//$longitude = (string)(eval('return '.$exif['GPSLongitude'][0].';')).'°'.(string)(eval('return '.$exif['GPSLongitude'][1].';'))."'".(string)(eval('return '.$exif['GPSLongitude'][2].';')).'"'.$exif['GPSLongitudeRef'];
+	$longitude = (string)((eval('return '.$exif['GPSLongitude'][0].';'))+((eval('return '.$exif['GPSLongitude'][1].';'))/60)+((eval('return '.$exif['GPSLongitude'][2].';'))/3600));
+	if($exif['GPSLongitudeRef']=='W') $longitude = "-$longitude";
+	switch( count($photo)) { 	// 
+	case 2:
+		//$outStr = "$num,".'"'.pathinfo($imgName, PATHINFO_BASENAME).'",,"'."$photoTypeName".'","'.$photo[1]."\",$latitude,$longitude\n";
+		$outStr = '"'.pathinfo($imgName, PATHINFO_BASENAME).'",,"'.$photoTypeName.'","'.end($photo)."\",\"$latitude\",\"$longitude\"\n";
+		break;
+	case 3: 	// считаем, что вторая колонка - описание
+		$outStr = '"'.pathinfo($imgName, PATHINFO_BASENAME).'","'.$photo[1].'","'.$photoTypeName.'","'.end($photo)."\",\"$latitude\",\"$longitude\"\n";
+		break;
+	default: 	// считаем, что третья колонка - тип, а остальные игнорируем
+		$outStr = '"'.pathinfo($imgName, PATHINFO_BASENAME).'","'.$photo[1].'","'.$photo[2].'","'.end($photo)."\",\"$latitude\",\"$longitude\"\n";
+	}
 	if($outputFile) fwrite($outputFile,$outStr);
 	else echo $outStr;
 }
