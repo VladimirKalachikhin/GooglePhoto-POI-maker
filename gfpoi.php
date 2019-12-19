@@ -52,7 +52,7 @@ if($albumPath = filter_var(filter_var($pos_args[0],FILTER_SANITIZE_URL),FILTER_V
 	$path_parts = pathinfo($_SERVER['SCRIPT_FILENAME']); // определяем каталог скрипта
 	require_once($path_parts['dirname']."/GooglePhotosURLs.php"); // 
 	$googlePhotos = GooglePhotosURLs($albumPath,NULL,NULL,'csv'); 	// get from GooglePhoto names and urls
-	print_r($googlePhotos); 
+	//print_r($googlePhotos); 
 }
 else { 	// get names and urls from file
 	$albumPath = filter_var($pos_args[0],FILTER_SANITIZE_STRING);
