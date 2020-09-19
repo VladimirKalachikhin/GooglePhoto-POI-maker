@@ -1,4 +1,4 @@
-# GooglePhoto POI maker
+# GooglePhoto POI maker [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 A PHP cli tool to create a common POI format csv for photos from YOUR OWN  public GooglePhoto album.  
 Case:  
 You have a some photos with spatial info. You create GooglePhotos album with this photos. Now you want to have sharable POI file with links to GooglePhotos, such as [StagerSaimaaPhotos.csv](https://github.com/VladimirKalachikhin/Saimaa-POI/blob/master/StagerSaimaaPhotos.csv). This need for see photos on a GoogleMap, in the [GaladrielMap](https://github.com/VladimirKalachikhin/Galadriel-map/tree/master), or to load photopoints to navigation device.
